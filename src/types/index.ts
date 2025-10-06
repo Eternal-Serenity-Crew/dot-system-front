@@ -7,6 +7,10 @@ export interface User {
   district: string
   institutionType: string
   institutionName: string
+  verified?: boolean
+  verificationCode?: string
+  createdAt?: string
+  verifiedAt?: string
 }
 
 // Типы для аутентификации
@@ -54,4 +58,17 @@ export interface ComponentProps {
 export interface CustomEvent {
   type: string
   payload?: any
+}
+
+// Типы для подтверждения email
+export interface EmailVerification {
+  email: string
+  code: string
+  expiresAt: string
+  attempts: number
+}
+
+export interface EmailVerificationData {
+  email: string
+  code: string
 }

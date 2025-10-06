@@ -8,7 +8,6 @@
               <img :src="logo" alt="Logo" class="logo mb-3" />
             </div>
              <h1 class="text-3xl font-bold text-gray-800">Вход в систему</h1>
-             <p class="text-gray-600 mt-2">Добро пожаловать в Dot System</p>
           </div>
         </template>
         <template #content>
@@ -72,7 +71,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import logo from '@/assets/logo.svg'
-import type { LoginCredentials, User } from '@/types'
+import type { LoginCredentials } from '@/types'
 
 // Reactive data
 const router = useRouter()
@@ -132,10 +131,27 @@ const handleLogin = async (): Promise<void> => {
     await new Promise(resolve => setTimeout(resolve, 1000))
     
     // Проверка учетных данных (в реальном приложении это будет API)
-    const users: User[] = JSON.parse(localStorage.getItem('users') || '[]')
+    const users: any[] = JSON.parse(localStorage.getItem('users') || '[]')
     const user = users.find(u => u.email === form.email && u.password === form.password)
     
     if (user) {
+      // Проверяем, подтвержден ли email
+      if (!user.verified) {
+        toast.add({
+          severity: 'warn',
+          summary: 'Требуется подтверждение',
+          detail: 'Пожалуйста, подтвердите ваш email перед входом в систему',
+          life: 5000
+        })
+        
+        // Перенаправляем на страницу подтверждения
+        router.push({
+          path: '/verify-email',
+          query: { email: user.email }
+        })
+        return
+      }
+      
       // Сохраняем данные пользователя
       localStorage.setItem('user', JSON.stringify(user))
       
@@ -294,7 +310,7 @@ const handleLogin = async (): Promise<void> => {
   /* Убрана анимация для предотвращения скроллбара */
 }
 
-/* Убраны задержки анимации */
+/* Убраны задержки анимации - все анимации удалены для предотвращения скроллбара */
 
 .field label {
   display: block;

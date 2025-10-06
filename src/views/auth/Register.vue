@@ -47,7 +47,7 @@
                 </div>
               </div>
 
-              <div class="col-12">
+              <div class="col-12 md:col-6">
                 <div class="field">
                   <label for="password" class="font-semibold text-gray-700">Пароль *</label>
                   <Password
@@ -56,9 +56,30 @@
                     placeholder="Введите пароль"
                     class="modern-input"
                     :class="{ 'p-invalid': errors.password }"
+                    :feedback="false"
+                    toggleMask
+                    required
+                    :showIcon="true"
+                  />
+                  <PasswordStrength :password="form.password" />
+                  <small v-if="errors.password" class="p-error">{{ errors.password }}</small>
+                </div>
+              </div>
+
+              <div class="col-12 md:col-6">
+                <div class="field">
+                  <label for="confirmPassword" class="font-semibold text-gray-700">Подтвердите пароль *</label>
+                  <Password
+                    id="confirmPassword"
+                    v-model="form.confirmPassword"
+                    placeholder="Подтвердите пароль"
+                    class="modern-input"
+                    :class="{ 'p-invalid': errors.confirmPassword }"
+                    :feedback="false"
+                    toggleMask
                     required
                   />
-                  <small v-if="errors.password" class="p-error">{{ errors.password }}</small>
+                  <small v-if="errors.confirmPassword" class="p-error">{{ errors.confirmPassword }}</small>
                 </div>
               </div>
 
@@ -82,16 +103,16 @@
 
               <div class="col-12">
                 <div class="field">
-                  <label for="institution" class="font-semibold text-gray-700">Образовательное учреждение *</label>
+                  <label for="institutionName" class="font-semibold text-gray-700">Образовательное учреждение *</label>
                   <InputText
-                    id="institution"
-                    v-model="form.institution"
+                    id="institutionName"
+                    v-model="form.institutionName"
                     placeholder="Введите название учреждения"
                     class="modern-input"
-                    :class="{ 'p-invalid': errors.institution }"
+                    :class="{ 'p-invalid': errors.institutionName }"
                     required
                   />
-                  <small v-if="errors.institution" class="p-error">{{ errors.institution }}</small>
+                  <small v-if="errors.institutionName" class="p-error">{{ errors.institutionName }}</small>
                 </div>
               </div>
 
@@ -159,6 +180,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import logo from '@/assets/logo.svg'
+import PasswordStrength from '@/components/PasswordStrength.vue'
 import type { RegisterData, SelectOption, User } from '@/types'
 
 // Reactive data
@@ -166,9 +188,11 @@ const router = useRouter()
 const toast = useToast()
 
 const loading = ref<boolean>(false)
-const form = reactive<RegisterData>({
+const form = reactive<RegisterData & { confirmPassword: string; fullName: string }>({
   email: '',
   password: '',
+  confirmPassword: '',
+  fullName: '',
   firstName: '',
   lastName: '',
   district: '',
@@ -180,18 +204,18 @@ const errors = reactive<{
   fullName: string
   email: string
   password: string
+  confirmPassword: string
   district: string
-  institution: string
+  institutionName: string
   institutionType: string
-  position: string
 }>({
   fullName: '',
   email: '',
   password: '',
+  confirmPassword: '',
   district: '',
-  institution: '',
-  institutionType: '',
-  position: ''
+  institutionName: '',
+  institutionType: ''
 })
 
 // Options for dropdowns
@@ -221,7 +245,7 @@ const validateForm = (): boolean => {
   })
   
   // Full name validation
-  if (!form.firstName.trim() || !form.lastName.trim()) {
+  if (!form.fullName.trim()) {
     errors.fullName = 'ФИО обязательно'
     isValid = false
   }
@@ -244,15 +268,24 @@ const validateForm = (): boolean => {
     isValid = false
   }
   
+  // Confirm password validation
+  if (!form.confirmPassword) {
+    errors.confirmPassword = 'Подтверждение пароля обязательно'
+    isValid = false
+  } else if (form.password !== form.confirmPassword) {
+    errors.confirmPassword = 'Пароли не совпадают'
+    isValid = false
+  }
+  
   // District validation
   if (!form.district) {
     errors.district = 'Район обязателен'
     isValid = false
   }
   
-  // Institution validation
+  // Institution name validation
   if (!form.institutionName.trim()) {
-    errors.institution = 'Название учреждения обязательно'
+    errors.institutionName = 'Название учреждения обязательно'
     isValid = false
   }
   
@@ -289,29 +322,57 @@ const handleRegister = async (): Promise<void> => {
       return
     }
     
-    // Создание нового пользователя
+    // Генерация кода подтверждения
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
+    
+    // Разделяем ФИО на имя и фамилию
+    const nameParts = form.fullName.trim().split(' ')
+    const firstName = nameParts[0] || ''
+    const lastName = nameParts.slice(1).join(' ') || ''
+    
+    // Создание нового пользователя (неподтвержденного)
     const newUser: User = {
       id: Date.now().toString(),
       email: form.email,
-      firstName: form.firstName,
-      lastName: form.lastName,
+      firstName: firstName,
+      lastName: lastName,
       district: form.district,
       institutionType: form.institutionType,
       institutionName: form.institutionName
     }
     
+    // Добавляем поля для подтверждения
+    const userWithVerification = {
+      ...newUser,
+      verified: false,
+      verificationCode,
+      createdAt: new Date().toISOString()
+    }
+    
     // Сохранение пользователя
-    users.push(newUser)
+    users.push(userWithVerification)
     localStorage.setItem('users', JSON.stringify(users))
+    
+    // Сохранение данных для подтверждения
+    const verificationData = {
+      email: form.email,
+      code: verificationCode,
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(), // 10 минут
+      attempts: 0
+    }
+    localStorage.setItem('emailVerification', JSON.stringify(verificationData))
     
     toast.add({
       severity: 'success',
-      summary: 'Успешно',
-      detail: 'Регистрация прошла успешно! Теперь вы можете войти в систему.',
-      life: 3000
+      summary: 'Регистрация завершена',
+      detail: 'Код подтверждения отправлен на ваш email. Пожалуйста, проверьте почту.',
+      life: 5000
     })
     
-    router.push('/login')
+    router.push({
+      path: '/verify-email',
+      query: { email: form.email }
+    })
   } catch (error) {
     toast.add({
       severity: 'error',
@@ -428,6 +489,20 @@ const handleRegister = async (): Promise<void> => {
 
 .modern-input::placeholder {
   color: rgba(44, 62, 80, 0.6);
+}
+
+/* Стили для индикатора силы пароля */
+.p-password .p-password-info {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.p-password .p-password-meter {
+  margin-top: 0.5rem;
 }
 
 .modern-button {
