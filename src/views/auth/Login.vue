@@ -130,22 +130,30 @@ const handleLogin = async (): Promise<void> => {
     // Имитация API запроса
     await new Promise(resolve => setTimeout(resolve, 1000))
     
-    // Создаем фиктивного пользователя для демонстрации
-    const demoUser = {
-      id: 'demo',
-      email: form.email,
-      firstName: 'Демо',
-      lastName: 'Пользователь',
-      district: 'central',
-      institutionType: 'sosh',
-      institutionName: 'Демонстрационное учреждение',
-      verified: true
-    }
+            // Создаем фиктивного пользователя для демонстрации
+            // Определяем роль на основе email
+            const isSystemAdmin = form.email.includes('system') || form.email.includes('admin')
+            const demoUser = {
+              id: 'demo',
+              email: form.email,
+              firstName: 'Демо',
+              lastName: 'Пользователь',
+              district: 'central',
+              institutionType: 'sosh',
+              institutionName: 'Демонстрационное учреждение',
+              role: isSystemAdmin ? 'admin_system' : 'admin_ou',
+              verified: true
+            }
     
     // Сохраняем данные пользователя
     localStorage.setItem('user', JSON.stringify(demoUser))
     
-    router.push('/dashboard')
+    // Перенаправляем на соответствующий дашборд в зависимости от роли
+    if (demoUser.role === 'admin_system') {
+      router.push('/dashboard-admin-system')
+    } else {
+      router.push('/dashboard-admin-ou')
+    }
   } catch (error) {
     toast.add({
       severity: 'error',
@@ -230,9 +238,10 @@ const handleLogin = async (): Promise<void> => {
 
 /* Убраны hover эффекты для плашки */
 
-.logo-container {
-  /* Убрана анимация логотипа */
-}
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
 
 .logo {
   height: 80px;

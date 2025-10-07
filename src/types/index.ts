@@ -7,6 +7,7 @@ export interface User {
   district: string
   institutionType: string
   institutionName: string
+  role: 'admin_system' | 'admin_ou'
   verified?: boolean
   verificationCode?: string
   createdAt?: string

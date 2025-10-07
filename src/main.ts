@@ -11,7 +11,7 @@ import 'primeflex/primeflex.css'
 import './assets/styles.css'
 
 // Locale
-import { ru } from './locales/ru'
+// import { ru } from './locales/ru' // Убрано, не используется
 
 // Components
 import Button from 'primevue/button'
@@ -30,12 +30,15 @@ import ToastService from 'primevue/toastservice'
 import Login from './views/auth/Login.vue'
 import Register from './views/auth/Register.vue'
 import EmailVerification from './views/auth/EmailVerification.vue'
-import Dashboard from './views/Dashboard.vue'
+import DashboardAdminSystem from './views/DashboardAdminSystem.vue'
+import DashboardAdminOu from './views/DashboardAdminOu.vue'
+import Statistics from './views/Statistics.vue'
+import DodReports from './views/DodReports.vue'
 
 // Test data - убрано
 
 // Types
-import type { RouteMeta } from './types'
+// import type { RouteMeta } from './types' // Убрано, не используется
 
 // Расширяем типы для Vue Router
 declare module 'vue-router' {
@@ -50,7 +53,10 @@ const routes: RouteRecordRaw[] = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
   { path: '/verify-email', name: 'EmailVerification', component: EmailVerification },
-  { path: '/dashboard', name: 'Dashboard', component: Dashboard }
+  { path: '/dashboard-admin-system', name: 'DashboardAdminSystem', component: DashboardAdminSystem },
+  { path: '/dashboard-admin-ou', name: 'DashboardAdminOu', component: DashboardAdminOu },
+  { path: '/statistics', name: 'Statistics', component: Statistics },
+  { path: '/dod-reports', name: 'DodReports', component: DodReports }
 ]
 
 const router = createRouter({
@@ -59,7 +65,7 @@ const router = createRouter({
 })
 
 // Navigation guard - упрощенная версия
-router.beforeEach((to, from, next) => {
+router.beforeEach((_to, _from, next) => {
   // Простой переход без проверок авторизации
   next()
 })
