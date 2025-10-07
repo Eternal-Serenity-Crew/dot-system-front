@@ -120,7 +120,7 @@ const validateForm = (): boolean => {
   return isValid
 }
 
-// Login handler
+// Login handler - упрощенная версия без авторизации
 const handleLogin = async (): Promise<void> => {
   if (!validateForm()) return
   
@@ -130,47 +130,22 @@ const handleLogin = async (): Promise<void> => {
     // Имитация API запроса
     await new Promise(resolve => setTimeout(resolve, 1000))
     
-    // Проверка учетных данных (в реальном приложении это будет API)
-    const users: any[] = JSON.parse(localStorage.getItem('users') || '[]')
-    const user = users.find(u => u.email === form.email && u.password === form.password)
-    
-    if (user) {
-      // Проверяем, подтвержден ли email
-      if (!user.verified) {
-        toast.add({
-          severity: 'warn',
-          summary: 'Требуется подтверждение',
-          detail: 'Пожалуйста, подтвердите ваш email перед входом в систему',
-          life: 5000
-        })
-        
-        // Перенаправляем на страницу подтверждения
-        router.push({
-          path: '/verify-email',
-          query: { email: user.email }
-        })
-        return
-      }
-      
-      // Сохраняем данные пользователя
-      localStorage.setItem('user', JSON.stringify(user))
-      
-      toast.add({
-        severity: 'success',
-        summary: 'Успешно',
-        detail: 'Вы успешно вошли в систему',
-        life: 3000
-      })
-      
-      router.push('/dashboard')
-    } else {
-      toast.add({
-        severity: 'error',
-        summary: 'Ошибка',
-        detail: 'Неверный email или пароль',
-        life: 3000
-      })
+    // Создаем фиктивного пользователя для демонстрации
+    const demoUser = {
+      id: 'demo',
+      email: form.email,
+      firstName: 'Демо',
+      lastName: 'Пользователь',
+      district: 'central',
+      institutionType: 'sosh',
+      institutionName: 'Демонстрационное учреждение',
+      verified: true
     }
+    
+    // Сохраняем данные пользователя
+    localStorage.setItem('user', JSON.stringify(demoUser))
+    
+    router.push('/dashboard')
   } catch (error) {
     toast.add({
       severity: 'error',

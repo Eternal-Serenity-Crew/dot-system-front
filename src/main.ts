@@ -32,8 +32,7 @@ import Register from './views/auth/Register.vue'
 import EmailVerification from './views/auth/EmailVerification.vue'
 import Dashboard from './views/Dashboard.vue'
 
-// Test data
-import { initializeTestData } from './data/testUsers.js'
+// Test data - убрано
 
 // Types
 import type { RouteMeta } from './types'
@@ -51,7 +50,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
   { path: '/verify-email', name: 'EmailVerification', component: EmailVerification },
-  { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } }
+  { path: '/dashboard', name: 'Dashboard', component: Dashboard }
 ]
 
 const router = createRouter({
@@ -59,20 +58,9 @@ const router = createRouter({
   routes
 })
 
-// Navigation guard с анимациями
+// Navigation guard - упрощенная версия
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('user')
-  
-  // Проверка авторизации
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login')
-    return
-  } else if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated) {
-    next('/dashboard')
-    return
-  }
-  
-  // Простой переход - анимации применяются автоматически через CSS
+  // Простой переход без проверок авторизации
   next()
 })
 
@@ -91,8 +79,7 @@ app.use(PrimeVue, {
 })
 app.use(ToastService)
 
-// Initialize test data
-initializeTestData()
+// Test data initialization - убрано
 
 // Register PrimeVue components globally
 app.component('Button', Button)

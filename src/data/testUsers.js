@@ -6,6 +6,7 @@ export const testUsers = [
     email: 'admin@system.ru',
     password: 'admin123',
     role: 'admin_system',
+    verified: true,
     createdAt: '2024-01-01T00:00:00.000Z'
   },
   {
@@ -18,6 +19,7 @@ export const testUsers = [
     institutionType: 'sosh',
     position: 'Директор',
     role: 'admin_ou',
+    verified: true,
     createdAt: '2024-01-15T10:30:00.000Z'
   },
   {
@@ -30,6 +32,7 @@ export const testUsers = [
     institutionType: 'spo',
     position: 'Заместитель директора',
     role: 'admin_ou',
+    verified: true,
     createdAt: '2024-02-01T14:20:00.000Z'
   }
 ]

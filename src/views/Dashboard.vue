@@ -1,38 +1,38 @@
 <template>
-  <div class="dashboard">
-    <Menubar :model="menuItems" class="mb-4">
+  <div class="dashboard dashboard-bg">
+    <Menubar :model="menuItems" class="dashboard-menubar">
       <template #start>
         <div class="flex align-items-center gap-3">
           <div class="logo-container">
             <img :src="logo" alt="Logo" class="logo-small" />
           </div>
-          <h2 class="text-2xl font-bold text-primary">Dot System</h2>
+          <h2 class="text-2xl font-bold text-white">Dot System</h2>
         </div>
       </template>
       <template #end>
         <div class="flex align-items-center gap-3">
-          <span class="text-sm">{{ user.fullName }}</span>
-          <span class="p-tag" :class="user.role === 'admin_system' ? 'p-tag-danger' : 'p-tag-info'">
+          <span class="text-sm text-white">{{ user.fullName }}</span>
+          <span class="p-tag modern-tag" :class="user.role === 'admin_system' ? 'p-tag-danger' : 'p-tag-info'">
             {{ user.role === 'admin_system' ? 'Администратор системы' : 'Администратор ОУ' }}
           </span>
           <Button
             label="Выйти"
             icon="pi pi-sign-out"
-            class="p-button-outlined p-button-sm"
+            class="modern-button-outlined"
             @click="handleLogout"
           />
         </div>
       </template>
     </Menubar>
     
-    <main class="container mx-auto px-4">
-      <div class="grid">
-        <div class="col-12">
-          <Card class="dashboard-card">
+    <main class="dashboard-main">
+      <div class="dashboard-container">
+        <div class="dashboard-content">
+          <Card class="dashboard-main-card">
             <template #title>
               <div class="flex align-items-center">
                 <i class="pi pi-home mr-2 text-primary"></i>
-                <span class="text-xl font-semibold">Панель управления</span>
+                <span class="text-xl font-semibold text-gray-800">Панель управления</span>
               </div>
             </template>
             <template #content>
@@ -43,8 +43,8 @@
                       <div class="info-icon">
                         <i class="pi pi-user text-4xl text-primary mb-3"></i>
                       </div>
-                      <h3 class="text-xl font-semibold mb-2">{{ user.fullName }}</h3>
-                      <p class="text-gray-600">{{ user.position }}</p>
+                      <h3 class="text-xl font-semibold mb-2 text-gray-800">{{ user.fullName }}</h3>
+                      <p class="text-gray-600">Администратор ОУ</p>
                     </template>
                   </Card>
                 </div>
@@ -55,7 +55,7 @@
                       <div class="info-icon">
                         <i class="pi pi-building text-4xl text-green-500 mb-3"></i>
                       </div>
-                      <h3 class="text-xl font-semibold mb-2">{{ user.institution }}</h3>
+                      <h3 class="text-xl font-semibold mb-2 text-gray-800">{{ user.institutionName }}</h3>
                       <p class="text-gray-600">{{ getInstitutionTypeLabel(user.institutionType) }}</p>
                     </template>
                   </Card>
@@ -67,7 +67,7 @@
                       <div class="info-icon">
                         <i class="pi pi-map-marker text-4xl text-orange-500 mb-3"></i>
                       </div>
-                      <h3 class="text-xl font-semibold mb-2">{{ getDistrictLabel(user.district) }}</h3>
+                      <h3 class="text-xl font-semibold mb-2 text-gray-800">{{ getDistrictLabel(user.district) }}</h3>
                       <p class="text-gray-600">Район</p>
                     </template>
                   </Card>
@@ -75,11 +75,15 @@
               </div>
 
               <div class="mt-4">
-                <h3 class="text-xl font-semibold mb-3">Информация о пользователе</h3>
-                <DataTable :value="userInfo" responsiveLayout="scroll">
-                  <Column field="label" header="Поле"></Column>
-                  <Column field="value" header="Значение"></Column>
-                </DataTable>
+                <h3 class="text-xl font-semibold mb-3 text-gray-800">Информация о пользователе</h3>
+                <Card class="info-table-card">
+                  <template #content>
+                    <DataTable :value="userInfo" responsiveLayout="scroll" class="modern-datatable">
+                      <Column field="label" header="Поле" class="font-semibold"></Column>
+                      <Column field="value" header="Значение"></Column>
+                    </DataTable>
+                  </template>
+                </Card>
               </div>
             </template>
           </Card>
@@ -179,61 +183,95 @@ onMounted(() => {
   if (userData) {
     user.value = JSON.parse(userData)
   } else {
-    router.push('/login')
+    // Создаем демо-пользователя если нет данных
+    user.value = {
+      id: 'demo',
+      email: 'demo@example.com',
+      firstName: 'Демо',
+      lastName: 'Пользователь',
+      district: 'central',
+      institutionType: 'sosh',
+      institutionName: 'Демонстрационное учреждение'
+    }
   }
 })
 </script>
 
-<style>
+<style scoped>
 .dashboard {
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   overflow: hidden;
-  /* Фон остается статичным при анимациях */
   background-attachment: fixed;
+  position: relative;
 }
 
-.container {
-  max-width: 1200px;
+.dashboard-bg {
+  background-image: url('/src/assets/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.logo-container {
-  /* Убрана анимация логотипа */
+.dashboard-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
 }
 
-.logo-small {
-  height: 40px;
-  width: auto;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-  transition: all 0.3s ease;
-}
-
-.logo-small:hover {
-  transform: scale(1.1);
-}
-
-.dashboard-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
+.dashboard-menubar {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.dashboard-main {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-content {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.dashboard-main-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   animation: slideUp 0.6s ease-out;
 }
 
-.dashboard-card:hover {
+.dashboard-main-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
 }
 
 .info-card {
   background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   animation: slideInUp 0.6s ease-out;
 }
@@ -248,16 +286,81 @@ onMounted(() => {
 
 .info-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
   background: rgba(255, 255, 255, 0.95);
 }
 
-.info-card:nth-child(1) { animation-delay: 0.1s; }
-.info-card:nth-child(2) { animation-delay: 0.2s; }
-.info-card:nth-child(3) { animation-delay: 0.3s; }
+.info-table-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
 
 .info-icon {
   animation: iconPulse 2s ease-in-out infinite;
+}
+
+.logo-container {
+  /* Убрана анимация логотипа */
+}
+
+.logo-small {
+  height: 40px;
+  width: auto;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+}
+
+.logo-small:hover {
+  transform: scale(1.1);
+}
+
+.modern-tag {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.modern-button-outlined {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.modern-button-outlined:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.modern-datatable {
+  background: transparent;
+}
+
+.modern-datatable .p-datatable-header {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px 8px 0 0;
+}
+
+.modern-datatable .p-datatable-tbody > tr {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modern-datatable .p-datatable-tbody > tr:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 @keyframes fadeIn {
@@ -285,11 +388,6 @@ onMounted(() => {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes logoFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
 }
 
 @keyframes iconPulse {
