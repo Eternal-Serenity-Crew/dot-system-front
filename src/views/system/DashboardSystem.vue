@@ -1,8 +1,6 @@
 <template>
-  <div class="dashboard dashboard-bg">
-    <Sidebar :user="user" />
-    
-    <main class="dashboard-main">
+  <Layout>
+    <div class="dashboard-content">
       <Card class="dashboard-main-card">
             <template #title>
               <div class="card-header">
@@ -118,17 +116,14 @@
               </div>
             </template>
           </Card>
-    </main>
-    
-    <Footer />
-  </div>
+    </div>
+  </Layout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import Sidebar from '@/components/Sidebar.vue'
-import Footer from '@/components/Footer.vue'
+import Layout from '@/components/Layout.vue'
 import type { User } from '@/types'
 
 // Reactive data
@@ -202,45 +197,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.dashboard {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  background-attachment: fixed;
-}
-
-.dashboard-bg {
-  background-image: url('/src/assets/bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.dashboard-bg::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 1;
-}
-
-.dashboard-main {
-  position: relative;
-  z-index: 2;
-  padding: 2rem;
-  height: 100vh;
-  width: 100%;
-  overflow-y: auto;
-  margin-left: 280px;
-  transition: margin-left 0.3s ease;
-  padding-bottom: 80px; /* Отступ для футера */
-}
-
 .dashboard-content {
   animation: fadeIn 0.6s ease-out;
 }

@@ -39,6 +39,10 @@ onMounted(() => {
       user.value = JSON.parse(userData)
     } else {
       // Создаем демо-пользователя если нет данных
+      // Определяем роль на основе текущего маршрута
+      const currentPath = window.location.pathname
+      const isSystemRoute = currentPath.startsWith('/system/')
+      
       user.value = {
         id: 'demo',
         email: 'demo@example.com',
@@ -47,7 +51,7 @@ onMounted(() => {
         district: 'central',
         institutionType: 'sosh',
         institutionName: 'Демонстрационное учреждение',
-        role: 'admin_system'
+        role: isSystemRoute ? 'admin_system' : 'admin_ou'
       }
     }
   }

@@ -1,8 +1,6 @@
 <template>
-  <div class="dashboard dashboard-bg">
-    <Sidebar :user="user" />
-    
-    <main class="dashboard-main">
+  <Layout>
+    <div class="dashboard-content">
       <Card class="dashboard-main-card">
             <template #title>
               <div class="card-header">
@@ -15,45 +13,45 @@
               <div class="ou-stats">
                 <div class="stat-card">
                   <div class="stat-icon">
-                    <i class="pi pi-users"></i>
+                    <i class="pi pi-check-circle"></i>
                   </div>
                   <div class="stat-content">
-                    <h3 class="stat-title">Обучающиеся ДОД</h3>
-                    <p class="stat-value">324</p>
-                    <p class="stat-change positive">+15 за месяц</p>
+                    <h3 class="stat-title">Справки ДОД проверенные</h3>
+                    <p class="stat-value">24</p>
+                    <p class="stat-change positive">+3 за неделю</p>
                   </div>
                 </div>
                 
                 <div class="stat-card">
                   <div class="stat-icon">
-                    <i class="pi pi-book"></i>
+                    <i class="pi pi-clock"></i>
                   </div>
                   <div class="stat-content">
-                    <h3 class="stat-title">Программы ДОД</h3>
-                    <p class="stat-value">28</p>
-                    <p class="stat-change positive">+2 за месяц</p>
+                    <h3 class="stat-title">Справки ДОД на проверке</h3>
+                    <p class="stat-value">8</p>
+                    <p class="stat-change neutral">Ожидают проверки</p>
                   </div>
                 </div>
                 
                 <div class="stat-card">
                   <div class="stat-icon">
-                    <i class="pi pi-file"></i>
+                    <i class="pi pi-file-edit"></i>
                   </div>
                   <div class="stat-content">
-                    <h3 class="stat-title">Справки ДОД</h3>
-                    <p class="stat-value">12</p>
-                    <p class="stat-change neutral">Активных</p>
+                    <h3 class="stat-title">Справки в работе</h3>
+                    <p class="stat-value">5</p>
+                    <p class="stat-change info">В процессе заполнения</p>
                   </div>
                 </div>
                 
                 <div class="stat-card">
                   <div class="stat-icon">
-                    <i class="pi pi-chart-bar"></i>
+                    <i class="pi pi-chart-line"></i>
                   </div>
                   <div class="stat-content">
-                    <h3 class="stat-title">Заполненность</h3>
-                    <p class="stat-value">87%</p>
-                    <p class="stat-change positive">+3% за месяц</p>
+                    <h3 class="stat-title">Общая активность</h3>
+                    <p class="stat-value">37</p>
+                    <p class="stat-change positive">Всего справок</p>
                   </div>
                 </div>
               </div>
@@ -69,16 +67,16 @@
                       @click="createDodReport"
                     />
                     <Button
-                      label="Добавить программу"
-                      icon="pi pi-book"
+                      label="Проверить справки"
+                      icon="pi pi-check"
                       class="action-button"
-                      @click="addProgram"
+                      @click="checkReports"
                     />
                     <Button
-                      label="Загрузить данные"
-                      icon="pi pi-upload"
+                      label="Экспорт справок"
+                      icon="pi pi-download"
                       class="action-button"
-                      @click="uploadData"
+                      @click="exportReports"
                     />
                     <Button
                       label="Настройки ОУ"
@@ -93,24 +91,24 @@
                   <h3 class="section-title">Последние действия</h3>
                   <div class="actions-list">
                     <div class="action-item">
+                      <i class="pi pi-check-circle action-icon"></i>
+                      <div class="action-content">
+                        <p class="action-text">Проверена справка ДОД "Художественное творчество"</p>
+                        <p class="action-time">30 минут назад</p>
+                      </div>
+                    </div>
+                    <div class="action-item">
                       <i class="pi pi-file action-icon"></i>
                       <div class="action-content">
-                        <p class="action-text">Создана справка ДОД за I квартал</p>
-                        <p class="action-time">1 час назад</p>
+                        <p class="action-text">Создана новая справка ДОД за II квартал</p>
+                        <p class="action-time">2 часа назад</p>
                       </div>
                     </div>
                     <div class="action-item">
-                      <i class="pi pi-book action-icon"></i>
+                      <i class="pi pi-clock action-icon"></i>
                       <div class="action-content">
-                        <p class="action-text">Добавлена программа "Робототехника"</p>
-                        <p class="action-time">3 часа назад</p>
-                      </div>
-                    </div>
-                    <div class="action-item">
-                      <i class="pi pi-users action-icon"></i>
-                      <div class="action-content">
-                        <p class="action-text">Зарегистрировано 15 новых обучающихся</p>
-                        <p class="action-time">1 день назад</p>
+                        <p class="action-text">Отправлена на проверку справка "Спортивные секции"</p>
+                        <p class="action-time">4 часа назад</p>
                       </div>
                     </div>
                   </div>
@@ -142,17 +140,14 @@
               </div>
             </template>
           </Card>
-    </main>
-    
-    <Footer />
-  </div>
+    </div>
+  </Layout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import Sidebar from '@/components/Sidebar.vue'
-import Footer from '@/components/Footer.vue'
+import Layout from '@/components/Layout.vue'
 import type { User } from '@/types'
 
 // Reactive data
@@ -199,20 +194,20 @@ const createDodReport = () => {
   })
 }
 
-const addProgram = () => {
+const checkReports = () => {
   toast.add({
     severity: 'info',
-    summary: 'Добавление программы',
-    detail: 'Функция добавления программы будет реализована',
+    summary: 'Проверка справок',
+    detail: 'Функция проверки справок будет реализована',
     life: 3000
   })
 }
 
-const uploadData = () => {
+const exportReports = () => {
   toast.add({
     severity: 'info',
-    summary: 'Загрузка данных',
-    detail: 'Функция загрузки данных будет реализована',
+    summary: 'Экспорт справок',
+    detail: 'Функция экспорта справок будет реализована',
     life: 3000
   })
 }
@@ -248,45 +243,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.dashboard {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  background-attachment: fixed;
-}
-
-.dashboard-bg {
-  background-image: url('/src/assets/bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.dashboard-bg::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 1;
-}
-
-.dashboard-main {
-  position: relative;
-  z-index: 2;
-  padding: 2rem;
-  height: 100vh;
-  width: 100%;
-  overflow-y: auto;
-  margin-left: 280px;
-  transition: margin-left 0.3s ease;
-  padding-bottom: 80px; /* Отступ для футера */
-}
-
 .dashboard-content {
   animation: fadeIn 0.6s ease-out;
 }
@@ -385,6 +341,10 @@ onMounted(() => {
 
 .stat-change.neutral {
   color: #6b7280;
+}
+
+.stat-change.info {
+  color: #3b82f6;
 }
 
 .ou-sections {

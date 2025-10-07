@@ -30,9 +30,15 @@ import ToastService from 'primevue/toastservice'
 import Login from './views/auth/Login.vue'
 import Register from './views/auth/Register.vue'
 import EmailVerification from './views/auth/EmailVerification.vue'
-import DashboardAdminSystem from './views/DashboardAdminSystem.vue'
-import DashboardAdminOu from './views/DashboardAdminOu.vue'
-import Statistics from './views/Statistics.vue'
+// System Admin pages
+import DashboardSystem from './views/system/DashboardSystem.vue'
+
+// OU Admin pages
+import DashboardOu from './views/ou/DashboardOu.vue'
+import DodReportsOu from './views/ou/DodReportsOu.vue'
+import SettingsOu from './views/ou/SettingsOu.vue'
+
+// Common pages
 import DodReports from './views/DodReports.vue'
 
 // Test data - убрано
@@ -53,9 +59,21 @@ const routes: RouteRecordRaw[] = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/register', name: 'Register', component: Register },
   { path: '/verify-email', name: 'EmailVerification', component: EmailVerification },
-  { path: '/dashboard-admin-system', name: 'DashboardAdminSystem', component: DashboardAdminSystem },
-  { path: '/dashboard-admin-ou', name: 'DashboardAdminOu', component: DashboardAdminOu },
-  { path: '/statistics', name: 'Statistics', component: Statistics },
+  
+  // System Admin routes
+  { path: '/system/dashboard', name: 'DashboardSystem', component: DashboardSystem },
+  { path: '/system/dod-reports', name: 'DodReportsSystem', component: DodReportsOu }, // Временно используем OU версию
+  { path: '/system/institutions', name: 'InstitutionsSystem', component: DashboardSystem }, // Временно используем дашборд
+  { path: '/system/ou-admins', name: 'OuAdminsSystem', component: DashboardSystem }, // Временно используем дашборд
+  { path: '/system/system-admins', name: 'SystemAdminsSystem', component: DashboardSystem }, // Временно используем дашборд
+  { path: '/system/reports', name: 'ReportsSystem', component: DashboardSystem }, // Временно используем дашборд
+  
+  // OU Admin routes
+  { path: '/ou/dashboard', name: 'DashboardOu', component: DashboardOu },
+  { path: '/ou/dod-reports', name: 'DodReportsOu', component: DodReportsOu },
+  { path: '/ou/settings', name: 'SettingsOu', component: SettingsOu },
+  
+  // Common routes
   { path: '/dod-reports', name: 'DodReports', component: DodReports }
 ]
 

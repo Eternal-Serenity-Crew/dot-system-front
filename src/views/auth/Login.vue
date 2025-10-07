@@ -150,9 +150,9 @@ const handleLogin = async (): Promise<void> => {
     
     // Перенаправляем на соответствующий дашборд в зависимости от роли
     if (demoUser.role === 'admin_system') {
-      router.push('/dashboard-admin-system')
+      router.push('/system/dashboard')
     } else {
-      router.push('/dashboard-admin-ou')
+      router.push('/ou/dashboard')
     }
   } catch (error) {
     toast.add({

@@ -12,22 +12,20 @@
         <!-- Общие разделы -->
         <li class="nav-item">
           <router-link 
-            :to="user.role === 'admin_system' ? '/dashboard-admin-system' : '/dashboard-admin-ou'" 
+            :to="user.role === 'admin_system' ? '/system/dashboard' : '/ou/dashboard'" 
             class="nav-link" 
-            :class="{ active: $route.name === 'DashboardAdminSystem' || $route.name === 'DashboardAdminOu' }"
+            :class="{ active: $route.name === 'DashboardSystem' || $route.name === 'DashboardOu' }"
           >
             <i class="pi pi-home nav-icon"></i>
             <span class="nav-text">Главная</span>
           </router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/statistics" class="nav-link" :class="{ active: $route.name === 'Statistics' }">
-            <i class="pi pi-chart-bar nav-icon"></i>
-            <span class="nav-text">Статистика</span>
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/dod-reports" class="nav-link" :class="{ active: $route.name === 'DodReports' }">
+          <router-link 
+            :to="user.role === 'admin_system' ? '/system/dod-reports' : '/ou/dod-reports'" 
+            class="nav-link" 
+            :class="{ active: $route.name === 'DodReportsSystem' || $route.name === 'DodReportsOu' }"
+          >
             <i class="pi pi-file nav-icon"></i>
             <span class="nav-text">Справки ДОД</span>
           </router-link>
@@ -36,25 +34,25 @@
         <!-- Разделы только для администратора системы -->
         <template v-if="user.role === 'admin_system'">
           <li class="nav-item">
-            <router-link to="/institutions" class="nav-link" :class="{ active: $route.name === 'Institutions' }">
+            <router-link to="/system/institutions" class="nav-link" :class="{ active: $route.name === 'InstitutionsSystem' }">
               <i class="pi pi-building nav-icon"></i>
               <span class="nav-text">Образовательные учреждения</span>
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/ou-admins" class="nav-link" :class="{ active: $route.name === 'OuAdmins' }">
+            <router-link to="/system/ou-admins" class="nav-link" :class="{ active: $route.name === 'OuAdminsSystem' }">
               <i class="pi pi-users nav-icon"></i>
               <span class="nav-text">Администраторы ОУ</span>
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/system-admins" class="nav-link" :class="{ active: $route.name === 'SystemAdmins' }">
+            <router-link to="/system/system-admins" class="nav-link" :class="{ active: $route.name === 'SystemAdminsSystem' }">
               <i class="pi pi-shield nav-icon"></i>
               <span class="nav-text">Администраторы платформы</span>
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/reports" class="nav-link" :class="{ active: $route.name === 'Reports' }">
+            <router-link to="/system/reports" class="nav-link" :class="{ active: $route.name === 'ReportsSystem' }">
               <i class="pi pi-chart-line nav-icon"></i>
               <span class="nav-text">Отчеты</span>
             </router-link>
@@ -63,7 +61,7 @@
         
         <!-- Раздел настроек для администратора ОУ -->
         <li class="nav-item" v-if="user.role === 'admin_ou'">
-          <router-link to="/settings" class="nav-link" :class="{ active: $route.name === 'Settings' }">
+          <router-link to="/ou/settings" class="nav-link" :class="{ active: $route.name === 'SettingsOu' }">
             <i class="pi pi-cog nav-icon"></i>
             <span class="nav-text">Настройки</span>
           </router-link>
