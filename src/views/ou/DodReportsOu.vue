@@ -39,6 +39,11 @@
                   :class="['tab-button', { active: activeTab === 'unchecked' }]"
                   @click="activeTab = 'unchecked'"
                 />
+                <Button
+                  :label="`Отклоненные (${rejectedReports.length})`"
+                  :class="['tab-button', { active: activeTab === 'rejected' }]"
+                  @click="activeTab = 'rejected'"
+                />
               </div>
             </div>
           </div>
@@ -80,7 +85,8 @@
                 </div>
               </div>
               
-              <div class="report-progress">
+              <!-- Прогресс-бар для обычных справок -->
+              <div v-if="!report.isRejected" class="report-progress">
                 <div class="progress-info">
                   <span>Заполнено разделов: {{ report.completedSections }}/{{ report.totalSections }}</span>
                   <div class="progress-bar">
@@ -90,6 +96,23 @@
                     ></div>
                   </div>
                 </div>
+              </div>
+              
+              <!-- Комментарий для отклоненных справок -->
+              <div v-if="report.isRejected" class="report-rejection">
+                <div class="rejection-reason">
+                  <i class="pi pi-exclamation-triangle rejection-icon"></i>
+                  <span class="rejection-text">{{ report.rejectionReason }}</span>
+                </div>
+              </div>
+              
+              <div class="report-actions">
+                <Button
+                  label="Разделы справки"
+                  icon="pi pi-list"
+                  class="sections-button"
+                  @click.stop="openSections(report)"
+                />
               </div>
             </div>
           </div>
@@ -261,13 +284,15 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Layout from '@/components/Layout.vue'
 
+const router = useRouter()
 const toast = useToast()
 
 // Состояние
-const activeTab = ref<'checked' | 'unchecked'>('unchecked')
+const activeTab = ref<'checked' | 'unchecked' | 'rejected'>('unchecked')
 const showReportDetails = ref(false)
 const showSectionForm = ref(false)
 const selectedReport = ref<any>(null)
@@ -416,6 +441,54 @@ const reports = ref([
       email: 'kozlov@school4.spb.ru'
     },
     sections: []
+  },
+  {
+    id: '005',
+    title: 'Справка о деятельности ДОД за 2023 год',
+    institution: 'МБОУ СОШ №5',
+    district: 'Западный район',
+    status: 'Отклонено',
+    isChecked: false,
+    isRejected: true,
+    submittedBy: 'Смирнов Д.А.',
+    submittedAt: new Date('2023-11-20'),
+    year: 2023,
+    completedSections: 0,
+    totalSections: 16,
+    rejectionReason: 'Неполные данные по разделу 3. Требуется указать возрастной состав обучающихся с разбивкой по возрастным группам.',
+    submittedByDetails: {
+      fullName: 'Смирнов Дмитрий Александрович',
+      position: 'Заместитель директора по УВР',
+      district: 'Западный район',
+      institution: 'МБОУ СОШ №5',
+      phone: '+7 (812) 567-89-01',
+      email: 'smirnov@school5.spb.ru'
+    },
+    sections: []
+  },
+  {
+    id: '006',
+    title: 'Справка о деятельности ДОД за 2024 год',
+    institution: 'МБОУ СОШ №6',
+    district: 'Южный район',
+    status: 'Отклонено',
+    isChecked: false,
+    isRejected: true,
+    submittedBy: 'Кузнецова Е.В.',
+    submittedAt: new Date('2024-02-15'),
+    year: 2024,
+    completedSections: 0,
+    totalSections: 16,
+    rejectionReason: 'Отсутствуют данные по источникам финансирования (раздел 4). Необходимо предоставить полную информацию о бюджетном и внебюджетном финансировании.',
+    submittedByDetails: {
+      fullName: 'Кузнецова Елена Владимировна',
+      position: 'Директор',
+      district: 'Южный район',
+      institution: 'МБОУ СОШ №6',
+      phone: '+7 (812) 678-90-12',
+      email: 'kuznetsova@school6.spb.ru'
+    },
+    sections: []
   }
 ])
 
@@ -437,14 +510,33 @@ const checkedReports = computed(() => {
 })
 
 const uncheckedReports = computed(() => {
-  let filtered = reports.value.filter(r => !r.isChecked)
+  let filtered = reports.value.filter(r => !r.isChecked && !r.isRejected)
   if (selectedYear.value) {
     filtered = filtered.filter(r => r.year === selectedYear.value)
   }
   return filtered
 })
 
-const currentReports = computed(() => activeTab.value === 'checked' ? checkedReports.value : uncheckedReports.value)
+const rejectedReports = computed(() => {
+  let filtered = reports.value.filter(r => r.isRejected)
+  if (selectedYear.value) {
+    filtered = filtered.filter(r => r.year === selectedYear.value)
+  }
+  return filtered
+})
+
+const currentReports = computed(() => {
+  switch (activeTab.value) {
+    case 'checked':
+      return checkedReports.value
+    case 'unchecked':
+      return uncheckedReports.value
+    case 'rejected':
+      return rejectedReports.value
+    default:
+      return uncheckedReports.value
+  }
+})
 const activeSectionData = computed(() => selectedReport.value?.sections[activeSection.value])
 const isAllSectionsCompleted = computed(() => {
   if (!selectedReport.value) return false
@@ -460,6 +552,11 @@ const filterByYear = () => {
 const selectReport = (report: any) => {
   selectedReport.value = report
   showReportDetails.value = true
+}
+
+const openSections = (report: any) => {
+  // Переходим к странице разделов справки
+  router.push(`/ou/report-sections/${report.id}`)
 }
 
 const openSection = (index: number) => {
@@ -503,7 +600,8 @@ const getStatusSeverity = (status: string) => {
   const severityMap: Record<string, string> = {
     'Проверено': 'success',
     'Не проверено': 'warning',
-    'В работе': 'info'
+    'В работе': 'info',
+    'Отклонено': 'danger'
   }
   return severityMap[status] || 'info'
 }
@@ -571,6 +669,53 @@ const formatDate = (date: Date) => {
 
 .reports-tabs {
   flex-shrink: 0;
+}
+
+.report-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.sections-button {
+  background: #163F5E;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.sections-button:hover {
+  background: #1e4a6b;
+}
+
+.report-rejection {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+}
+
+.rejection-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.rejection-icon {
+  color: #ef4444;
+  font-size: 1.2rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.rejection-text {
+  color: #dc2626;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  font-weight: 500;
 }
 
 .tab-buttons {

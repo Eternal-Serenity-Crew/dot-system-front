@@ -36,6 +36,7 @@ import DashboardSystem from './views/system/DashboardSystem.vue'
 // OU Admin pages
 import DashboardOu from './views/ou/DashboardOu.vue'
 import DodReportsOu from './views/ou/DodReportsOu.vue'
+import ReportSectionsOu from './views/ou/ReportSectionsOu.vue'
 import SettingsOu from './views/ou/SettingsOu.vue'
 
 // Common pages
@@ -71,6 +72,7 @@ const routes: RouteRecordRaw[] = [
   // OU Admin routes
   { path: '/ou/dashboard', name: 'DashboardOu', component: DashboardOu },
   { path: '/ou/dod-reports', name: 'DodReportsOu', component: DodReportsOu },
+  { path: '/ou/report-sections/:id', name: 'ReportSectionsOu', component: ReportSectionsOu },
   { path: '/ou/settings', name: 'SettingsOu', component: SettingsOu },
   
   // Common routes
